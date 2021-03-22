@@ -82,7 +82,14 @@ import Cardano.Binary
 import Cardano.Ledger.Alonzo.Data (Data, DataHash, hashData)
 import Cardano.Ledger.Alonzo.Language (Language (..), nonNativeLanguages)
 import Cardano.Ledger.Alonzo.PParams (LangDepView (..), PParams, getLanguageView)
-import Cardano.Ledger.Alonzo.Scripts (CostModel, ExUnits (..), Prices, Tag (..), scriptfee)
+import Cardano.Ledger.Alonzo.Scripts
+  ( CostModel,
+    ExUnits (..),
+    Prices,
+    Script,
+    Tag (..),
+    scriptfee,
+  )
 import Cardano.Ledger.Alonzo.TxBody
   ( EraIndependentWitnessPPData,
     TxBody (..),
@@ -597,6 +604,8 @@ instance
     Compactible (Core.Value era),
     DecodeNonNegative (Core.Value era),
     DecodeMint (Core.Value era),
+    Core.Script era ~ Script era,
+    ValidateScript era,
     Show (Core.Value era),
     Val (Core.Value era)
   ) =>
@@ -628,6 +637,8 @@ deriving via
       DecodeNonNegative (Core.Value era),
       DecodeMint (Core.Value era),
       Show (Core.Value era),
+      Core.Script era ~ Script era,
+      ValidateScript era,
       Val (Core.Value era)
     ) =>
     FromCBOR (Annotator (Tx era))
