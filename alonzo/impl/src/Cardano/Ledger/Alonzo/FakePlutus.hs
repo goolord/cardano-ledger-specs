@@ -109,5 +109,7 @@ data ScriptPurpose
 data Context = Context TxInfo ScriptPurpose
 
 instance IsData Context where
-  toData (Context _ _) = undefined
+  -- toData will be implemented in the Plutus library,
+  -- this is just a FakePlutus hack.
+  toData (Context _ _) = I 0
   fromData _ctxdata = Nothing

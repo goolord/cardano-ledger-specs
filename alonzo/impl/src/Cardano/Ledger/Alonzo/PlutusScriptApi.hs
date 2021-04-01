@@ -34,7 +34,7 @@ import Cardano.Ledger.Alonzo.Tx
     wits',
   )
 import qualified Cardano.Ledger.Alonzo.TxBody as Alonzo (TxBody (..), TxOut (..), vldt')
-import Cardano.Ledger.Alonzo.TxInfo (runPLCScript, transTx, valContext)
+import Cardano.Ledger.Alonzo.TxInfo (transTx, valContext)
 import Cardano.Ledger.Alonzo.TxWitness (TxWitness (txwitsVKey'), txscripts')
 import qualified Cardano.Ledger.Core as Core
 import Cardano.Ledger.Era (Crypto, Era, ValidateScript (..))
@@ -48,6 +48,7 @@ import Data.Sequence.Strict (StrictSeq)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import GHC.Records (HasField (..))
+import qualified Language.PlutusTx as P (Data (..))
 import Shelley.Spec.Ledger.Address (Addr)
 import Shelley.Spec.Ledger.BaseTypes (StrictMaybe (..))
 import Shelley.Spec.Ledger.Credential (Credential (ScriptHashObj))
@@ -140,7 +141,13 @@ evalScripts tx ((AlonzoScript.TimelockScript timelock, _, _, _) : rest) =
   where
     vhks = Set.map witKeyHash (txwitsVKey' (wits' tx))
 evalScripts tx ((AlonzoScript.PlutusScript pscript, ds, units, cost) : rest) =
-  runPLCScript cost pscript units (map getPlutusData ds) && evalScripts tx rest
+  runPLCScript_TESTING_ONLY_WARNING cost pscript units (map getPlutusData ds) && evalScripts tx rest
+  where
+    -- TEMPORARY replacement for runPLCScript in order to write tests.
+    -- TODO WARNING replace this function with runPLCScript AS SOON AS
+    -- we can supply a proper cost model to plutus
+    runPLCScript_TESTING_ONLY_WARNING _ _ _ ((P.I x) : _) = x == 42
+    runPLCScript_TESTING_ONLY_WARNING _ _ _ _ = False
 
 -- ===================================================================
 -- From Specification, Figure 12 "UTXOW helper functions"

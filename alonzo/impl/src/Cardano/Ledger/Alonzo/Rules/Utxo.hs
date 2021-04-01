@@ -94,7 +94,7 @@ import Shelley.Spec.Ledger.UTxO
 
 -- Size of the datum hash attached to the output (could be Nothing)
 datHashSize :: TxOut era -> Integer
-datHashSize out = error "need heapwords instance"
+datHashSize out = 0 --TODO "need heapwords instance"
   where
     _ = getField @"datahash" out
 

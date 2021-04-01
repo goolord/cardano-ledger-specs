@@ -134,11 +134,13 @@ deriving stock instance
   Eq (TxOut era)
 
 instance
-  ( Show (Core.Value era)
+  ( Era era,
+    Show (Core.Value era)
   ) =>
   Show (TxOut era)
   where
-  show = error "Not yet implemented"
+  show (TxOut addr vl dh) =
+    "TxOut (" <> show addr <> " " <> show vl <> " " <> show dh <> ")"
 
 deriving via InspectHeapNamed "TxOut" (TxOut era) instance NoThunks (TxOut era)
 

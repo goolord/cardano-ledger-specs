@@ -100,15 +100,27 @@ test-suite tests
     test/test
   other-modules:
     Test.Cardano.Ledger.Alonzo.Serialisation.Tripping
+    Test.Cardano.Ledger.Alonzo.Examples.Utxow
   build-depends:
     base16-bytestring,
     bytestring,
     cardano-binary,
     cardano-ledger-alonzo,
+    cardano-ledger-core,
+    cardano-ledger-shelley-ma,
     cardano-ledger-shelley-ma-test,
+    containers,
+    data-default-class,
+    plutus-core,
+    plutus-tx,
+    plutus-ledger-api,
     QuickCheck,
+    small-steps,
+    small-steps-test,
     shelley-spec-ledger,
     shelley-spec-ledger-test,
+    strict-containers,
+    tasty-hunit,
     tasty-quickcheck,
     tasty,
     test
