@@ -23,6 +23,7 @@ where
 
 import Cardano.Ledger.Alonzo.Data (AuxiliaryData (..), getPlutusData)
 import Cardano.Ledger.Alonzo.PParams (PParams, PParams' (..), PParamsUpdate, updatePParams)
+import Cardano.Ledger.Alonzo.Rules.Ledger (AlonzoLEDGER)
 import qualified Cardano.Ledger.Alonzo.Rules.Utxo as Alonzo (AlonzoUTXO)
 import qualified Cardano.Ledger.Alonzo.Rules.Utxos as Alonzo (UTXOS)
 import qualified Cardano.Ledger.Alonzo.Rules.Utxow as Alonzo (AlonzoUTXOW)
@@ -51,6 +52,7 @@ import Data.Typeable (Typeable)
 import qualified Plutus.V1.Ledger.Api as Plutus (validateScript)
 import qualified Shelley.Spec.Ledger.API as API
 import qualified Shelley.Spec.Ledger.BaseTypes as Shelley
+import Shelley.Spec.Ledger.CompactAddr (CompactAddr)
 import Shelley.Spec.Ledger.Metadata (validMetadatum)
 import qualified Shelley.Spec.Ledger.STS.Bbody as STS
 import qualified Shelley.Spec.Ledger.STS.Bbody as Shelley
@@ -69,11 +71,16 @@ import Shelley.Spec.Ledger.TxBody (witKeyHash)
 -- | The Alonzo era
 data AlonzoEra c
 
-instance API.PraosCrypto c => API.ApplyTx (AlonzoEra c)
+{-
+instance
+  ( Show (CompactAddr c),
+    API.PraosCrypto c
+  ) => API.ApplyTx (AlonzoEra c)
+-}
 
-instance API.PraosCrypto c => API.ApplyBlock (AlonzoEra c)
+instance (Show (CompactAddr c), API.PraosCrypto c) => API.ApplyBlock (AlonzoEra c)
 
-instance API.PraosCrypto c => API.GetLedgerView (AlonzoEra c)
+instance (Show (CompactAddr c), API.PraosCrypto c) => API.GetLedgerView (AlonzoEra c)
 
 instance (CC.Crypto c) => Shelley.ValidateScript (AlonzoEra c) where
   isNativeScript x = not (isPlutusScript x)
@@ -97,8 +104,7 @@ instance
   -- initialState :: ShelleyGenesis era -> AdditionalGenesisConfig era -> NewEpochState era
   initialState _ _ = error "TODO: implement initialState"
 
-instance CC.Crypto c => UsesTxOut (AlonzoEra c) where
-  -- makeTxOut :: Proxy era -> Addr (Crypto era) -> Value era -> TxOut era
+instance (Show (CompactAddr c), CC.Crypto c) => UsesTxOut (AlonzoEra c) where
   makeTxOut _proxy addr val = TxOut addr val Shelley.SNothing
 
 instance
@@ -149,8 +155,13 @@ instance CC.Crypto c => EraModule.BlockDecoding (AlonzoEra c) where
   seqIsValidating tx = case isValidating' tx of IsValidating b -> b
   seqHasValidating = True -- Tx in AlonzoEra has an IsValidating field
 
-instance API.PraosCrypto c => API.ShelleyBasedEra (AlonzoEra c)
-
+{-
+instance
+  ( Show (CompactAddr c),
+    API.PraosCrypto c,
+    Core.Witnesses c ~ TxWitness c
+  ) => API.ShelleyBasedEra (AlonzoEra c)
+-}
 -------------------------------------------------------------------------------
 -- Era Mapping
 -------------------------------------------------------------------------------
@@ -163,6 +174,7 @@ type instance Core.EraRule "UTXO" (AlonzoEra c) = Alonzo.AlonzoUTXO (AlonzoEra c
 
 type instance Core.EraRule "UTXOW" (AlonzoEra c) = Alonzo.AlonzoUTXOW (AlonzoEra c)
 
+{-
 type LEDGERSTUB c =
   STUB
     (API.LedgerEnv (AlonzoEra c))
@@ -173,8 +185,9 @@ type LEDGERSTUB c =
 
 instance Typeable c => STS.Embed (LEDGERSTUB c) (API.LEDGERS (AlonzoEra c)) where
   wrapFailed = error "TODO: implement LEDGER rule"
+-}
 
-type instance Core.EraRule "LEDGER" (AlonzoEra c) = LEDGERSTUB c
+type instance Core.EraRule "LEDGER" (AlonzoEra c) = AlonzoLEDGER c
 
 type instance
   Core.EraRule "BBODY" (AlonzoEra c) =
