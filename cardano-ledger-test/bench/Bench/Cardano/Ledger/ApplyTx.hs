@@ -13,7 +13,7 @@ module Bench.Cardano.Ledger.ApplyTx (applyTxBenchmarks) where
 import Cardano.Binary
 import Cardano.Ledger.Allegra (AllegraEra)
 import qualified Cardano.Ledger.Core as Core
-import Cardano.Ledger.Era (Era,ValidateScript)
+import Cardano.Ledger.Era (Era, ValidateScript)
 import Cardano.Ledger.Mary (MaryEra)
 import Cardano.Ledger.Shelley (ShelleyEra)
 import Control.DeepSeq (NFData (..))
