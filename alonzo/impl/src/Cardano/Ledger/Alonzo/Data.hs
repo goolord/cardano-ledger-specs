@@ -63,7 +63,6 @@ import Cardano.Ledger.SafeHash
     SafeToHash,
     hashAnnotated,
   )
-
 import Cardano.Prelude (HeapWords (..), heapWords0, heapWords1)
 import qualified Data.ByteString as BS (ByteString, length)
 import Data.ByteString.Lazy (toStrict)

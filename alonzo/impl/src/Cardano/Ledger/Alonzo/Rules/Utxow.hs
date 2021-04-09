@@ -237,7 +237,6 @@ alonzoStyleWitness = do
           accum2 script bad = if validateScript @era script tx then bad else script : bad
   null failedScripts2 ?! ScriptsDidNotValidate failedScripts2
 
-
   let utxo = _utxo u'
       sphs :: [(ScriptPurpose (Crypto era), ScriptHash (Crypto era))]
       sphs = scriptsNeeded utxo tx
