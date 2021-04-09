@@ -5,6 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies #-}
 
 -- | Benchmarks for transaction application
 module Bench.Cardano.Ledger.ApplyTx (applyTxBenchmarks) where
@@ -12,7 +13,7 @@ module Bench.Cardano.Ledger.ApplyTx (applyTxBenchmarks) where
 import Cardano.Binary
 import Cardano.Ledger.Allegra (AllegraEra)
 import qualified Cardano.Ledger.Core as Core
-import Cardano.Ledger.Era (Era)
+import Cardano.Ledger.Era (Era,ValidateScript)
 import Cardano.Ledger.Mary (MaryEra)
 import Cardano.Ledger.Shelley (ShelleyEra)
 import Control.DeepSeq (NFData (..))
@@ -34,7 +35,6 @@ import Shelley.Spec.Ledger.API
     Tx,
     applyTxsTransition,
   )
-import Shelley.Spec.Ledger.PParams (PParams' (..))
 import Shelley.Spec.Ledger.Slot (SlotNo (SlotNo))
 import Test.Shelley.Spec.Ledger.ConcreteCryptoTypes (C_Crypto)
 import Test.Shelley.Spec.Ledger.Utils (testGlobals)
@@ -85,6 +85,7 @@ applyTxEra ::
   forall era.
   ( Era era,
     ApplyTx era,
+    Core.Tx era ~ Tx era,
     Default (Core.PParams era),
     FromCBOR (MempoolState era)
   ) =>
@@ -140,7 +141,11 @@ applyTxGroup =
 deserialiseTxEra ::
   forall era.
   ( Era era,
-    ApplyTx era
+    ValidateScript era,
+    ToCBOR (Core.Script era),
+    FromCBOR (Annotator (Core.TxBody era)),
+    FromCBOR (Annotator (Core.Script era)),
+    FromCBOR (Annotator (Core.AuxiliaryData era))
   ) =>
   Proxy era ->
   Benchmark
