@@ -34,7 +34,7 @@ module Cardano.Ledger.Alonzo.Data
   )
 where
 
-import Cardano.Binary (FromCBOR (..), ToCBOR (..), withSlice)
+import Cardano.Binary (FromCBOR (..), ToCBOR (..))
 import Cardano.Ledger.AuxiliaryData (AuxiliaryDataHash (..))
 import qualified Cardano.Ledger.Core as Core
 import qualified Cardano.Ledger.Crypto as CC
@@ -65,8 +65,6 @@ import Cardano.Ledger.SafeHash
   )
 import Cardano.Prelude (HeapWords (..), heapWords0, heapWords1)
 import qualified Data.ByteString as BS (ByteString, length)
-import Data.ByteString.Lazy (toStrict)
-import Data.ByteString.Short (toShort)
 import Data.Coders
 import Data.Map (Map)
 import Data.MemoBytes (Mem, MemoBytes (..), memoBytes)
